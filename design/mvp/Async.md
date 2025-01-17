@@ -151,7 +151,34 @@ component-level function that has been [lifted] from Core WebAssembly with the
 function that does not have the `async` option set (which is the default and
 only option prior to Preview 3). Thus, the sync/async distinction appears
 only independently in how a component-level function is *implemented* or
-*called*.
+*called*. This lack of distinction helps to avoid the classic ["What Color Is
+Your Function?"][Color] problem.
+
+Function types *may* be given an optional `non-blocking` function attribute to
+indicate that the caller should assume that the callee doesn't block. However,
+`non-blocking` is ignored at validation- and run-time and thus a `non-blocking`
+function may in fact block (and indeed there are valid use cases for doing so,
+such as in performance-insensitive virtualization scenarios). Therefore,
+`non-blocking` is primarily intended as a *hint* to inform source-language
+bindings to generate synchronous source-level function signatures (lifted and
+and lowered without setting the `async` Canonical ABI option). Importantly,
+since "blocking" is the default, interface authors are encouraged to apply
+`non-blocking` judiciously.
+
+Since in many languages `new` expressions cannot be async, `constructor`
+functions also imply `non-blocking`. In the future, [getters and setters] would
+also imply `non-blocking`. For example:
+```wit
+interface filesystem {
+  resource file {
+    constructor();                                  // non-blocking by default
+    is-closed: non-blocking func() -> bool;         // explicitly non-blocking
+    read: func(num-bytes: u32) -> result<list<u8>>; // blocking by default
+```
+If a resource-type has a potentially-blocking constructor, it can simply use
+`static new: func(...) -> my-resource` instead; `constructor` has no advantages
+beyond more-idiomatic bindings generation in some languages.
+
 
 ### Task
 
@@ -591,8 +618,6 @@ Native async support is being proposed incrementally. The following features
 will be added in future chunks roughly in the order list to complete the full
 "async" story, with a TBD cutoff between what's in [WASI Preview 3] and what
 comes after:
-* `nonblocking` function type attribute: allow a function to declare in its
-  type that it will not transitively do anything blocking
 * define what `async` means for `start` functions (top-level await + background
   tasks), along with cross-task coordination built-ins
 * `subtask.cancel`: allow a supertask to signal to a subtask that its result is
@@ -646,6 +671,7 @@ comes after:
 [Use Cases]: ../high-level/UseCases.md
 [Blast Zone]: FutureFeatures.md#blast-zones
 [Reentrance]: Explainer.md#component-invariants
+[Getters And Setters]: https://github.com/WebAssembly/component-model/issues/235
 
 [stack-switching]: https://github.com/WebAssembly/stack-switching/
 [JSPI]: https://github.com/WebAssembly/js-promise-integration/

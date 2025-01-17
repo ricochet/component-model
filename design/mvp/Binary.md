@@ -203,8 +203,8 @@ defvaltype    ::= pvt:<primvaltype>                       => pvt
                 | 0x6a t?:<valtype>? u?:<valtype>?        => (result t? (error u)?)
                 | 0x69 i:<typeidx>                        => (own i)
                 | 0x68 i:<typeidx>                        => (borrow i)
-                | 0x66 i?:<typeidx>?                      => (stream i?)
-                | 0x65 i?:<typeidx>?                      => (future i?)
+                | 0x66 i?:<typeidx>?                      => (stream i?) 🔀
+                | 0x65 i?:<typeidx>?                      => (future i?) 🔀
 labelvaltype  ::= l:<label'> t:<valtype>                  => l t
 case          ::= l:<label'> t?:<valtype>? 0x00           => (case l t?)
 label'        ::= len:<u32> l:<label>                     => l    (if len = |l|)
@@ -214,7 +214,11 @@ valtype       ::= i:<typeidx>                             => i
                 | pvt:<primvaltype>                       => pvt
 resourcetype  ::= 0x3f 0x7f f?:<funcidx>?                 => (resource (rep i32) (dtor f)?)
                 | 0x3e 0x7f f:<funcidx> cb?:<funcidx>?    => (resource (rep i32) (dtor async f (callback cb)?))
-functype      ::= 0x40 ps:<paramlist> rs:<resultlist>     => (func ps rs)
+functype      ::= 0x40 sig:<funcsig>                      => (func sig)
+                | 0x3d attrs:<funcattrs> sig:<funcsig>    => (func attrs sig) 🔀
+funcattrs     ::= 0x00                                    =>
+                | 0x01                                    => non-blocking
+funcsig       ::= ps:<paramlist> rs:<resultlist>          => ps rs
 paramlist     ::= lt*:vec(<labelvaltype>)                 => (param lt)*
 resultlist    ::= 0x00 t:<valtype>                        => (result t)
                 | 0x01 0x00                               =>
@@ -386,7 +390,10 @@ Notes:
   export, respectively, in the same scope (component, component type or
   instance type).
 * Validation of `[constructor]` names requires that the `func` returns a
-  `(result (own $R))`, where `$R` is the resource labeled `r`.
+  `(result (own $R))`, where `$R` is the resource labeled `r`. Additionally,
+  the function type *should* have the `non-blocking` attribute. In a future
+  pre-1.0 breaking change, validation will *require* the `non-blocking`
+  attribute.
 * Validation of `[method]` names requires the first parameter of the function
   to be `(param "self" (borrow $R))`, where `$R` is the resource labeled `r`.
 * Validation of `[method]` and `[static]` names ensures that all field names
@@ -487,6 +494,8 @@ named once.
 * The opcodes (for types, canon built-ins, etc) should be re-sorted
 * The two `list` type codes should be merged into one with an optional immediate.
 * The `0x00` prefix byte of `importname'` and `exportname'` will be removed or repurposed.
+* Merge the two `functype` opcodes.
+* Require `non-blocking` on `[constructor]` functions.
 
 
 [`core:byte`]: https://webassembly.github.io/spec/core/binary/values.html#binary-byte

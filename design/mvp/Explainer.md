@@ -555,12 +555,13 @@ defvaltype    ::= bool
                 | (result <valtype>? (error <valtype>)?)
                 | (own <typeidx>)
                 | (borrow <typeidx>)
-                | (stream <typeidx>?)
-                | (future <typeidx>?)
+                | (stream <typeidx>?) 🔀
+                | (future <typeidx>?) 🔀
 valtype       ::= <typeidx>
                 | <defvaltype>
 resourcetype  ::= (resource (rep i32) (dtor async? <funcidx> (callback <funcidx>)?)?)
-functype      ::= (func (param "<label>" <valtype>)* (result <valtype>)?)
+functype      ::= (func <funcattr>? (param "<label>" <valtype>)* (result <valtype>)?)
+funcattr      ::= non-blocking 🔀
 componenttype ::= (component <componentdecl>*)
 instancetype  ::= (instance <instancedecl>*)
 componentdecl ::= <importdecl>
@@ -783,7 +784,11 @@ shared-nothing functions, resources, components, and component instances:
 
 The `func` type constructor describes a component-level function definition
 that takes a list of uniquely-named `valtype` parameters and optionally returns
-a `valtype`.
+a `valtype`. Function types can optionally be annotated with a `non-blocking`
+attribute which has no semantic effect and is ignored at validation- and
+run-time, serving primarily as a hint that tells bindings generators to lift
+and lower without setting the `async` `canonopt` (see the [async
+explainer](Async.md#sync-and-async-functions) for more details).
 
 The `resource` type constructor creates a fresh type for each instance of the
 containing component (with "freshness" and its interaction with general

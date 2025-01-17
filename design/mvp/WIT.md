@@ -876,6 +876,7 @@ keyword ::= 'as'
           | 'include'
           | 'interface'
           | 'list'
+          | 'non-blocking'
           | 'option'
           | 'own'
           | 'package'
@@ -1295,7 +1296,7 @@ typedef-item ::= resource-item
 
 func-item ::= id ':' func-type ';'
 
-func-type ::= 'func' param-list result-list
+func-type ::= 'non-blocking'? 'func' param-list result-list
 
 param-list ::= '(' named-type-list ')'
 
