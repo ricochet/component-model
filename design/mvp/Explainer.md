@@ -786,8 +786,8 @@ The `func` type constructor describes a component-level function definition
 that takes a list of uniquely-named `valtype` parameters and optionally returns
 a `valtype`. Function types can optionally be annotated with a `non-blocking`
 attribute which has no semantic effect and is ignored at validation- and
-run-time, serving primarily as a hint that tells bindings generators to lift
-and lower without setting the `async` `canonopt` (see the [async
+run-time, serving only as a hint to bindings generators to lift and lower
+without setting the `async` `canonopt` (see the [async
 explainer](Async.md#sync-and-async-functions) for more details).
 
 The `resource` type constructor creates a fresh type for each instance of the
