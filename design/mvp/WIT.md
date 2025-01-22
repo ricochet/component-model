@@ -1309,6 +1309,17 @@ named-type-list ::= ϵ
 named-type ::= id ':' ty
 ```
 
+The optional `non-blocking` attribute on WIT function types indicates that the
+callee *should not* block and thus the caller *should not* need to emit
+asynchronous language bindings (e.g., in JS/Python/Rust, a `non-blocking`
+function would emit a plain function instead of an `async` function). However,
+`non-blocking` is just a hint and not enforced by the runtime and so it is
+technically possible for the callee to block. In that case, though, it is the
+*callee's* fault for any resultant loss of concurrency, not the caller's. Thus,
+`non-blocking` is primarily intended to document expectations in a way that can
+be taken advantage of by bindings generators. (For more details, see the
+[async explainer](Async.md#sync-and-async-functions).)
+
 
 ## Item: `use`
 
