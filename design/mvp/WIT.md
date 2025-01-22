@@ -1320,6 +1320,19 @@ technically possible for the callee to block. In that case, though, it is the
 be taken advantage of by bindings generators. (For more details, see the
 [async explainer](Async.md#sync-and-async-functions).)
 
+Note that "block" here can refer to any of:
+* a host function deciding that the call will take long enough that it's worth
+  it to switch back to running guest code;
+* a wasm function deciding it can't make progress until one of its subtasks
+  makes progress and [waiting](Async.md#waiting);
+* a wasm function [yielding](Explainer.md#-taskyield) in the middle of an
+  otherwise long-running computation.
+
+If any of these blocking conditions occur, the wasm runtime will return control
+flow back to an async caller, allowing it to make progress. But if none of
+these happen, the caller will not get to run until the function returns. Thus,
+`non-blocking` doesn't mean that a function "returns instantly" but, rather,
+that a function "shouldn't trigger one of the above blocking conditions".
 
 ## Item: `use`
 
