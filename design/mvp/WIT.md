@@ -1874,6 +1874,7 @@ map ::= 'map' '<' kt ',' ty '>'
 kt ::= 'u8' | 'u16' | 'u32' | 'u64'
      | 's8' | 's16' | 's32' | 's64'
      | 'char' | 'bool' | 'string'
+     | id
 
 future ::= 'future' '<' ty '>'
          | 'future'
@@ -1918,6 +1919,13 @@ meanings though so they're also provided as first-class types.
 values but is meant to be represented by bindings generators in the source
 language as a mapping from keys to values (e.g., as an associative array or or
 hash table) where, in the case of duplicate keys, the last key's value is used.
+An `id` may be used as a `kt` when it (transitively) aliases one of the other
+`kt` cases:
+
+```wit
+type key = string;
+lookup: func() -> map<key, list<string>>;
+```
 
 The `future` and `stream` types are described as part of the [concurrency
 explainer](Concurrency.md#streams-and-futures).

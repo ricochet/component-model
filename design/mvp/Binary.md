@@ -208,7 +208,7 @@ defvaltype    ::= pvt:<primvaltype>                       => pvt
                 | 0x68 i:<typeidx>                        => (borrow i)
                 | 0x66 t?:<valtype>?                      => (stream t?) 🔀
                 | 0x65 t?:<valtype>?                      => (future t?) 🔀
-                | 0x63 k:<valtype> v:<valtype>            => (map k v) (if k is in <keytype>) 🗺️
+                | 0x63 k:<valtype> v:<valtype>            => (map k v) (if k resolves to a <keytype>) 🗺️
 labelvaltype  ::= l:<labellit> t:<valtype>                => l t
 case          ::= l:<labellit> t?:<valtype>? 0x00         => (case l t?)
 labellit      ::= len:<u32> l:<label>                     => "l"  (if len = |l|)

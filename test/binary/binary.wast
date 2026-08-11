@@ -957,6 +957,14 @@
   "\63\73\79"                                 ;; (map string u32)
 )
 
+(component binary
+  "\00asm" "\0d\00\01\00"                     ;; preamble
+  "\07\05"                                    ;; type section (5 bytes)
+  "\02"                                       ;; 2 types
+  "\73"                                       ;; string
+  "\63\00\79"                                 ;; (map (type 0) u32)
+)
+
 ;; canonical section (id 8)
 
 (component binary

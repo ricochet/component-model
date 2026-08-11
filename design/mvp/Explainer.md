@@ -621,7 +621,7 @@ defvaltype    ::= bool
                 | (future <valtype>?) 🔀
 valtype       ::= <typeidx>
                 | <defvaltype>
-keytype       ::= bool | s8 | u8 | s16 | u16 | s32 | u32 | s64 | u64 | char | string 🗺️
+keytype       ::= <typeidx> | bool | s8 | u8 | s16 | u16 | s32 | u32 | s64 | u64 | char | string 🗺️
 resourcetype  ::= (resource (rep i32) (dtor core-prefix(<core:funcidx>))?)
                 | (resource (rep i64) (dtor core-prefix(<core:funcidx>))?) 🐘
 functype      ::= (func async? (param <labellit> <valtype>)* (result <valtype>)?)
@@ -845,7 +845,8 @@ original list defines the final value of the key. However, bindings generators
 are not *required* to deduplicate keys and may instead simply present the
 original list to guest code. To simplify bindings generation, `<keytype>` is a
 conservative subset of `<valtype>`, but this subset could be expanded over time
-based on use cases.
+based on use cases. A `typeidx` is a valid `keytype` when the type it refers to
+is itself a `keytype`.
 
 Note that, at least initially, variants must have a non-empty list of
 cases. This could be relaxed in the future to allow an empty list of cases, with
